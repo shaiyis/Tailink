@@ -3,13 +3,10 @@ from rest_framework import serializers
 from .models import Profile, Hobby
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class BaseProfileSerializer(serializers.ModelSerializer):
     # Fields from User model
-    username = serializers.CharField(max_length=30, required=True)
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    email = serializers.CharField(max_length=30, required=True)
-    first_name = serializers.CharField(max_length=30, required=True)
-    last_name = serializers.CharField(max_length=30, required=True)
+    first_name = serializers.CharField(source='user.first_name', max_length=30, required=True)
+    last_name = serializers.CharField(source='user.last_name', max_length=30, required=True)
 
     # Fields from Profile model
     age = serializers.IntegerField(required=True)
@@ -22,11 +19,21 @@ class RegisterSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = User
+        model = Profile
         fields = [
-            'username', 'password', 'email', 'first_name', 'last_name', 
+            'first_name', 'last_name',
             'age', 'city', 'about_me', 'looking_for', 'picture', 'hobbies'
         ]
+
+
+class RegisterSerializer(BaseProfileSerializer):
+    # Fields from User model
+    username = serializers.CharField(source='user.username', max_length=30, required=True)
+    password = serializers.CharField(source='user.password', write_only=True, required=True, style={'input_type': 'password'})
+    email = serializers.CharField(source='user.email', max_length=30, required=True)
+
+    class Meta(BaseProfileSerializer.Meta):
+        fields = BaseProfileSerializer.Meta.fields + ['username', 'password', 'email']
 
     def create(self, validated_data):
         # Extract Profile-specific fields
@@ -40,11 +47,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Create User instance
         user = User.objects.create_user(
-            username=validated_data['username'],
-            password=validated_data['password'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
+            username=validated_data['user']['username'],
+            password=validated_data['user']['password'],
+            email=validated_data['user']['email'],
+            first_name=validated_data['user']['first_name'],
+            last_name=validated_data['user']['last_name']
         )
 
         # Create Profile instance
