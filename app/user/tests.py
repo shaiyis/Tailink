@@ -23,6 +23,7 @@ from django.test import TestCase
   "hobbies": [1, 2],
   "picture": "My picture's url"
 }
+token ee072d31840376c1c9e78703e541028c1e378204
 {
   "username": "jane_smith",
   "password": "anothersecurepassword",
@@ -36,6 +37,7 @@ from django.test import TestCase
   "hobbies": [3, 4],
   "picture": "Jane's picture's url"
 }
+token f7deadddc53fb0a015036a0a3bb7e85339865b59
 {
   "username": "michael_brown",
   "password": "yetanothersecurepassword",
@@ -49,11 +51,28 @@ from django.test import TestCase
   "hobbies": [5, 6],
   "picture": "Michael's picture's url"
 }
+token 70173159dfb608b66e42d8cd28cbb8c8a22bea21
 '''
-#output - User registered successfully
+#output - User registered successfully!
 
-#get_profiles
-#http://localhost:8000/admin/user/profiles
+# get_profiles
+#http://localhost:8000/api/profiles
 
-#get_profile/id
-#http://localhost:8000/admin/user/profile/{profile_id}
+# get_profile/id
+#http://localhost:8000/api/profiles/{profile_id}
+
+# get_matches
+#http://localhost:8000/api/matches
+#Add using the ModHeader chrome extension: Authorization: Token <your-token-here>
+# get the token via login page.
+# 
+# Tests Done:
+# Getting matches when:
+#   1. age and hobbies matches
+#   2. more than one hobby in common
+#   3. more than one profiles matches
+#
+# Getting no matches when:
+#   1. only age matches
+#   2. only hobbies matches
+#   3. nothing matches

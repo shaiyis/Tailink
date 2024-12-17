@@ -33,7 +33,7 @@ class RegisterSerializer(BaseProfileSerializer):
     email = serializers.CharField(source='user.email', max_length=30, required=True)
 
     class Meta(BaseProfileSerializer.Meta):
-        fields = BaseProfileSerializer.Meta.fields + ['username', 'password', 'email']
+        fields = ['username', 'password', 'email'] + BaseProfileSerializer.Meta.fields
 
     def create(self, validated_data):
         # Extract Profile-specific fields

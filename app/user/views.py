@@ -1,11 +1,16 @@
+from django.db.models import F
+from django.db.models.functions import Abs
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.response import Response
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
 from user import serializers
 from user.models import Profile
+
 
 
 # input username, password, output - AuthToken
@@ -33,7 +38,39 @@ class UserRegisterApiView(APIView):
 
 class ProfileViewSet(ReadOnlyModelViewSet):
     """
-    A simple ViewSet for viewing profiles along with user information.
+    ViewSet for viewing profiles along with user information.
     """
     queryset = Profile.objects.select_related('user').all()
     serializer_class = serializers.BaseProfileSerializer
+
+
+class ProfileMatchesViewSet(ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing profiles matches:
+    Age difference is up to 5 years and the profiles have at least one hobby in common.
+    """
+    authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+
+    def get_queryset(self):
+        # Get the current user's profile
+        user_profile = Profile.objects.filter(user=self.request.user).first()
+
+        if not user_profile:
+            return Response({"error": "Profile not found for the current user"}, status=404)
+
+        # Get profiles with age difference up to 5 and at least one hobby in common
+        return Profile.objects.annotate(
+            age_difference=Abs(F('age') - user_profile.age)
+        ).filter(
+            age_difference__lte=5,
+            hobbies__in=user_profile.hobbies.all()
+        ).exclude(
+            id=user_profile.id  # Exclude the current user's profile
+        ).distinct()  # Ensure no duplicates due to ManyToMany relationships
+
+    def list(self, request):
+        matches = self.get_queryset()
+        serializer = serializers.BaseProfileSerializer(matches, many=True)
+        # Return the matching profiles
+        return Response(serializer.data)
