@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('about_me', models.TextField()),
                 ('looking_for', models.TextField()),
                 ('picture', models.CharField(max_length=100)),
-                ('hobbies', models.ManyToManyField(blank=True, to='user.Hobby')),
+                ('hobbies', models.ManyToManyField(blank=True, to='profile.Hobby')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

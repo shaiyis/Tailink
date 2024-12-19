@@ -3,14 +3,14 @@ from django.db.models.functions import Abs
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from user import serializers
-from user.models import Profile
-
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from . import serializers
+from profile.models import Profile, ProfileAvailability
 
 
 # input username, password, output - AuthToken
@@ -74,3 +74,12 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
         serializer = serializers.BaseProfileSerializer(matches, many=True)
         # Return the matching profiles
         return Response(serializer.data)
+    
+
+class ProfileAvailabilityViewSet(ModelViewSet):
+    queryset = ProfileAvailability.objects.select_related('profile').select_related('place').all()
+    serializer_class = serializers.ProfileAvailabilitySerializer
+
+
+
+

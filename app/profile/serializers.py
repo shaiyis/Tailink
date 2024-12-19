@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Profile, Hobby
+from .models import Profile, Hobby, ProfileAvailability
 
 
 class BaseProfileSerializer(serializers.ModelSerializer):
@@ -64,3 +64,14 @@ class RegisterSerializer(BaseProfileSerializer):
         profile.save()
 
         return user
+
+
+class ProfileAvailabilitySerializer(serializers.ModelSerializer):
+    profile_first_name = serializers.CharField(source='profile.user.first_name', max_length=30, required=True)
+    profile_last_name = serializers.CharField(source='profile.user.last_name', max_length=30, required=True)
+    place_name = serializers.CharField(source='place.name', max_length=30, required=True)
+
+    class Meta:
+        model = ProfileAvailability
+        #fields = '__all__'  # Include all fields in the model
+        fields = ['profile_first_name', 'profile_last_name', 'place_name', 'start_time', 'end_time']

@@ -2,14 +2,16 @@ from django.test import TestCase
 
 # Create your tests here.
 
-# login
-# http://localhost:8000/api/login/
-# input - username, password
-# outout - token
-
-# register
-# http://localhost:8000/api/register/
 '''
+login
+http://localhost:8000/api/login/
+input - username, password
+outout - token
+
+register
+http://localhost:8000/api/register/
+
+Add hobbies: gaming, soccer, coding, cooking, playing, traveling
 {
   "username": "john_doe",
   "password": "securepassword",
@@ -52,27 +54,36 @@ token f7deadddc53fb0a015036a0a3bb7e85339865b59
   "picture": "Michael's picture's url"
 }
 token 70173159dfb608b66e42d8cd28cbb8c8a22bea21
+
+output - User registered successfully!
+
+get_profiles
+http://localhost:8000/api/profiles
+
+get_profile/id
+http://localhost:8000/api/profiles/{profile_id}
+
+get_matches
+http://localhost:8000/api/matches
+Add using the ModHeader chrome extension: Authorization: Token <your-token-here>
+get the token via login page.
+ 
+ Tests Done:
+ Getting matches when:
+   1. age and hobbies matches
+   2. more than one hobby in common
+   3. more than one profiles matches
+
+ Getting no matches when:
+   1. only age matches
+   2. only hobbies matches
+   3. nothing matches
+
+set_place_and_time
+{
+    "start_time": "2024-12-19T20:00:00Z",
+    "end_time": "2024-12-19T21:00:00Z",
+    "profile": 1,
+    "place_name": 1
+}
 '''
-#output - User registered successfully!
-
-# get_profiles
-#http://localhost:8000/api/profiles
-
-# get_profile/id
-#http://localhost:8000/api/profiles/{profile_id}
-
-# get_matches
-#http://localhost:8000/api/matches
-#Add using the ModHeader chrome extension: Authorization: Token <your-token-here>
-# get the token via login page.
-# 
-# Tests Done:
-# Getting matches when:
-#   1. age and hobbies matches
-#   2. more than one hobby in common
-#   3. more than one profiles matches
-#
-# Getting no matches when:
-#   1. only age matches
-#   2. only hobbies matches
-#   3. nothing matches
