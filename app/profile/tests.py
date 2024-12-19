@@ -86,4 +86,9 @@ set_place_and_time
     "profile": 1,
     "place_name": 1
 }
+
+
+http://localhost:8000/api/profile-availability/?profile=1
+http://localhost:8000/api/profile-availability/?place=1
+http://localhost:8000/api/profile-availability/?profile=1&place=1
 '''

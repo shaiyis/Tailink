@@ -1,5 +1,6 @@
 from django.db.models import F
 from django.db.models.functions import Abs
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -79,7 +80,5 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
 class ProfileAvailabilityViewSet(ModelViewSet):
     queryset = ProfileAvailability.objects.select_related('profile').select_related('place').all()
     serializer_class = serializers.ProfileAvailabilitySerializer
-
-
-
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['profile', 'place', 'start_time', 'end_time']
