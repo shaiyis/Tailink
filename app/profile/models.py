@@ -11,6 +11,7 @@ class Hobby(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=20, default='unspecified')
     age = models.PositiveIntegerField()
     city = models.CharField(max_length=100)
     about_me = models.TextField()
@@ -20,7 +21,7 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
 
 class ProfileAvailability(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
@@ -34,5 +35,3 @@ class ProfileAvailability(models.Model):
             f"from {self.start_time.strftime('%Y-%m-%d %H:%M')} "
             f"to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
         )
-
-

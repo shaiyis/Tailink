@@ -59,7 +59,7 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
 
         if not user_profile:
             return Response({"error": "Profile not found for the current user"}, status=404)
-
+        
         # Get profiles with age difference up to 5 and at least one hobby in common
         return Profile.objects.annotate(
             age_difference=Abs(F('age') - user_profile.age)
@@ -68,6 +68,8 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
             hobbies__in=user_profile.hobbies.all()
         ).exclude(
             id=user_profile.id  # Exclude the current user's profile
+        ).exclude(
+            gender=user_profile.gender  # Exclude profiles with the same gender
         ).distinct()  # Ensure no duplicates due to ManyToMany relationships
 
     def list(self, request):

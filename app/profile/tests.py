@@ -18,6 +18,7 @@ Add hobbies: gaming, soccer, coding, cooking, playing, traveling
   "email": "john_doe@gmail.com",
   "first_name": "John",
   "last_name": "Doe",
+  "gender": "male",
   "age": 25,
   "city": "New York",
   "about_me": "I love coding and gaming.",
@@ -32,11 +33,12 @@ token ee072d31840376c1c9e78703e541028c1e378204
   "email": "jane_smith@gmail.com",
   "first_name": "Jane",
   "last_name": "Smith",
+  "gender": "female",
   "age": 30,
   "city": "San Francisco",
   "about_me": "I'm a tech enthusiast who enjoys hiking.",
   "looking_for": "Someone adventurous and curious.",
-  "hobbies": [3, 4],
+  "hobbies": [1, 2],
   "picture": "Jane's picture's url"
 }
 token f7deadddc53fb0a015036a0a3bb7e85339865b59
@@ -46,11 +48,12 @@ token f7deadddc53fb0a015036a0a3bb7e85339865b59
   "email": "michael_brown@gmail.com",
   "first_name": "Michael",
   "last_name": "Brown",
+  "gender": "male",
   "age": 28,
   "city": "Seattle",
   "about_me": "A bookworm who loves exploring coffee shops.",
   "looking_for": "Someone who loves good books and deep conversations.",
-  "hobbies": [5, 6],
+  "hobbies": [1, 2],
   "picture": "Michael's picture's url"
 }
 token 70173159dfb608b66e42d8cd28cbb8c8a22bea21

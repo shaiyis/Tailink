@@ -9,6 +9,7 @@ class BaseProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', max_length=30, required=True)
 
     # Fields from Profile model
+    gender = serializers.CharField(max_length=20, required=True)
     age = serializers.IntegerField(required=True)
     city = serializers.CharField(max_length=100, required=True)
     about_me = serializers.CharField(required=True)
@@ -22,7 +23,7 @@ class BaseProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             'first_name', 'last_name',
-            'age', 'city', 'about_me', 'looking_for', 'picture', 'hobbies'
+            'gender', 'age', 'city', 'about_me', 'looking_for', 'picture', 'hobbies'
         ]
 
 
@@ -38,6 +39,7 @@ class RegisterSerializer(BaseProfileSerializer):
     def create(self, validated_data):
         # Extract Profile-specific fields
         profile_data = {
+            'gender': validated_data.pop('gender'),
             'age': validated_data.pop('age'),
             'city': validated_data.pop('city'),
             'about_me': validated_data.pop('about_me'),
