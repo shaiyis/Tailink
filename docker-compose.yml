@@ -1,7 +1,7 @@
 # version: "3.9"
 
 services:
-  app:
+  project:
     build:
       context: .
     ports:
@@ -10,3 +10,43 @@ services:
       - ./app:/app
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      retries: 3
+
+  profile:
+    build:
+      context: .
+    depends_on:
+      - project
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001"]
+      interval: 10s
+      retries: 3
+
+  place:
+    build:
+      context: .
+    depends_on:
+      - project
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002"]
+      interval: 10s
+      retries: 3
+
+
+
+
