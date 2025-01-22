@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Profile, Hobby, ProfileAvailability
-
+import requests
 
 class BaseProfileSerializer(serializers.ModelSerializer):
     # Fields from User model
@@ -68,12 +68,59 @@ class RegisterSerializer(BaseProfileSerializer):
         return user
 
 
+PLACE_SERVICE_URL = "http://localhost:8000/api/place/"
+
 class ProfileAvailabilitySerializer(serializers.ModelSerializer):
-    profile_first_name = serializers.CharField(source='profile.user.first_name', max_length=30, required=True)
-    profile_last_name = serializers.CharField(source='profile.user.last_name', max_length=30, required=True)
-    place_name = serializers.CharField(source='place.name', max_length=30, required=True)
+    profile_username = serializers.CharField(write_only=True)  # Accept profile_username in input
+    place_name = serializers.CharField(write_only=True)  # Accept place_name in input
+    place_id = serializers.UUIDField(read_only=True)  # Store UUID but hide it from input
+    start_time = serializers.DateTimeField(required=True)
+    end_time = serializers.DateTimeField(required=True)
 
     class Meta:
         model = ProfileAvailability
         #fields = '__all__'  # Include all fields in the model
-        fields = ['profile_first_name', 'profile_last_name', 'place_name', 'start_time', 'end_time']
+        fields = ['profile_username', 'place_name', 'place_id', 'start_time', 'end_time']
+
+    def create(self, validated_data):
+        """Manually retrieve Profile and Place ID before saving"""
+
+        # Extract profile_username & place_name from validated_data
+        profile_username = validated_data.pop('profile_username')
+        place_name = validated_data.pop('place_name')
+
+        # Get Profile object
+        profile = Profile.objects.filter(user__username=profile_username).first()
+        if not profile:
+            raise serializers.ValidationError({'profile_username': 'Profile not found'})
+
+        # Fetch place_id from Place Service API
+        response = requests.get(f"{PLACE_SERVICE_URL}places?name={place_name}")
+        if response.status_code == 200 and response.json():
+            place_id = response.json()[0]['id']  # Extract place_id from API response
+        else:
+            raise serializers.ValidationError({'place_name': 'Place not found in Place Service'})
+
+        # Now create ProfileAvailability (without profile_username & place_name)
+        return ProfileAvailability.objects.create(
+            profile=profile,
+            place_id=place_id,  # Store UUID
+            **validated_data  # Includes start_time & end_time
+        )
+
+
+    def to_representation(self, instance):
+        """Fetch place_name from Place Service using place_id"""
+        data = super().to_representation(instance)
+
+        data['profile_username'] = instance.profile.user.username
+
+        # Call the Place Service API to get place_name
+        response = requests.get(f"{PLACE_SERVICE_URL}places/{instance.place_id}/")
+        if response.status_code == 200:
+            data['place_name'] = response.json().get('name', 'Unknown')
+        else:
+            data['place_name'] = 'Unknown'
+
+        return data
+

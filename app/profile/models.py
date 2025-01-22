@@ -25,13 +25,13 @@ class Profile(models.Model):
 
 class ProfileAvailability(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    place = models.OneToOneField('place.Place', on_delete=models.CASCADE)
+    place_id = models.BigIntegerField()
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
     def __str__(self):
         return (
-            f"{self.profile} is available at {self.place} "
+            f"{self.profile} is available at {self.place_id} "
             f"from {self.start_time.strftime('%Y-%m-%d %H:%M')} "
             f"to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
         )

@@ -84,14 +84,11 @@ get the token via login page.
 
 set_place_and_time
 {
+    "profile_username": "john_doe",
     "start_time": "2024-12-19T20:00:00Z",
     "end_time": "2024-12-19T21:00:00Z",
-    "profile": 1,
-    "place_name": 1
+    "place_name": "garden"
 }
 
-
-http://localhost:8000/api/profile-availability/?profile=1
-http://localhost:8000/api/profile-availability/?place=1
-http://localhost:8000/api/profile-availability/?profile=1&place=1
+Filter by profile and place with Filters in the admin panel.
 '''

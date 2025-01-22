@@ -80,7 +80,7 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
     
 
 class ProfileAvailabilityViewSet(ModelViewSet):
-    queryset = ProfileAvailability.objects.select_related('profile').select_related('place').all()
+    queryset = ProfileAvailability.objects.all()
     serializer_class = serializers.ProfileAvailabilitySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['profile', 'place', 'start_time', 'end_time']
+    filterset_fields = ['profile', 'place_id', 'start_time', 'end_time']
