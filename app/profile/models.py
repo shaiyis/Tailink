@@ -31,7 +31,7 @@ class ProfileAvailability(models.Model):
 
     def __str__(self):
         return (
-            f"{self.profile} is available at {self.place_id} "
+            f"{self.profile} is available at place_id {self.place_id} "
             f"from {self.start_time.strftime('%Y-%m-%d %H:%M')} "
             f"to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
         )

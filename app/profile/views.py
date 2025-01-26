@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from . import serializers
 from profile.models import Profile, ProfileAvailability
+from .utils import get_current_location
 
 
 # input username, password, output - AuthToken
@@ -84,3 +85,5 @@ class ProfileAvailabilityViewSet(ModelViewSet):
     serializer_class = serializers.ProfileAvailabilitySerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['profile', 'place_id', 'start_time', 'end_time']
+
+    

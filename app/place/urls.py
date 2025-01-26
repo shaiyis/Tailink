@@ -7,5 +7,6 @@ router = DefaultRouter()
 router.register('places', views.PlaceViewSet)
 
 urlpatterns = [
+    path('create/', views.CreatePlaceView.as_view()),
     path('', include(router.urls)),
 ]
