@@ -26,7 +26,7 @@ Add hobbies: gaming, soccer, coding, cooking, playing, traveling
   "hobbies": [1, 2],
   "picture": "My picture's url"
 }
-token ee072d31840376c1c9e78703e541028c1e378204
+token 58b128d9f87ba2e647fc79587275e53b4f9905f4
 {
   "username": "jane_smith",
   "password": "anothersecurepassword",
@@ -41,7 +41,7 @@ token ee072d31840376c1c9e78703e541028c1e378204
   "hobbies": [1, 2],
   "picture": "Jane's picture's url"
 }
-token f7deadddc53fb0a015036a0a3bb7e85339865b59
+token 0ba10454fe32a8be28db06b62fb780a971bdd21d
 {
   "username": "michael_brown",
   "password": "yetanothersecurepassword",
