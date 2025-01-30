@@ -91,4 +91,7 @@ set_place_and_time
 }
 
 Filter by profile and place with Filters in the admin panel.
+
+NearbyProfilesViewSet
+/api/profile/nearby-profiles/{?radius=15}
 '''

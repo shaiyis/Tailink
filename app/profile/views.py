@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.db.models import F
 from django.db.models.functions import Abs
 from django_filters.rest_framework import DjangoFilterBackend
 from math import radians, cos, sin, asin, sqrt
+import openai
+from profile.models import Profile, ProfileAvailability
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -13,7 +16,6 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from . import serializers
-from profile.models import Profile, ProfileAvailability
 from .utils import get_current_location
 
 
@@ -110,7 +112,7 @@ class ProfileAvailabilityViewSet(ModelViewSet):
     filterset_fields = ['profile', 'place_id', 'start_time', 'end_time']
 
 
-class NearbyProfilesView(APIView):
+class NearbyProfilesViewSet(ReadOnlyModelViewSet):
     authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
     permission_classes = [IsAuthenticated]
 
@@ -124,25 +126,89 @@ class NearbyProfilesView(APIView):
         c = 2 * asin(sqrt(a))
         return R * c
 
-    def get_nearby_profiles(self, user, radius_km=10):
+    def get_queryset(self):
+        user = self.request.user
         user_profile = Profile.objects.get(user=user)
+
+        if not user_profile or user_profile.latitude is None or user_profile.longitude is None:
+            return Profile.objects.none()  # No location data
+
         user_lat, user_lon = user_profile.latitude, user_profile.longitude
 
-        if user_lat is None or user_lon is None:
-            return Profile.objects.none()  # No location data
+        # Get radius from query params (default is 10 km)
+        radius_km = float(self.request.query_params.get("radius", 10))
 
         nearby_profiles = []
         for profile in Profile.objects.exclude(user=user):
             if profile.latitude is not None and profile.longitude is not None:
-                distance = NearbyProfilesView.haversine_distance(
+                distance = NearbyProfilesViewSet.haversine_distance(
                     user_lat, user_lon, profile.latitude, profile.longitude)
                 if distance <= radius_km:
                     nearby_profiles.append(profile)
         
         return nearby_profiles
 
-    def get(self, request):
-        user = request.user
-        nearby_profiles = self.get_nearby_profiles(user, radius_km=10)
+    def list(self, request):
+        nearby_profiles = self.get_queryset()
         serializer = serializers.BaseProfileSerializer(nearby_profiles, many=True)
         return Response(serializer.data)
+    
+
+class AIBaseSuggestionView(APIView):
+    authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_profile = Profile.objects.filter(user=request.user).first()
+
+        if not user_profile:
+            return Response({"error": "Profile not found"}, status=404)
+
+        # Reuse the match logic from ProfileMatchesViewSet
+        viewset = ProfileMatchesViewSet()
+        viewset.request = request
+        matches = viewset.get_queryset()
+
+        if not matches.exists():
+            return Response({"message": "No suitable matches found."}, status=200)
+
+        serializer = serializers.BaseProfileSerializer(matches, many=True)
+        profiles_data = serializer.data
+        
+        match_strings = "".join([
+            f"- Name: {match['first_name']} {match['last_name']}, Age: {match['age']}, "
+            f"Gender: {match['gender']}, City: {match['city']}\n"
+            f"  About: {match['about_me']}\n"
+            f"  Looking for: {match['looking_for']}\n"
+            f"  Hobbies: {', '.join(match['hobbies'])}\n"
+            for match in profiles_data
+            ])
+
+        # Prepare AI prompt
+        prompt = (
+            f"You are an AI matchmaker helping users find a compatible match.\n"
+            f"The user profile is:\n"
+            f"Name: {user_profile.user.first_name} {user_profile.user.last_name},\n"
+            f"Age: {user_profile.age}, Gender: {user_profile.gender}, "
+            f"City: {user_profile.city}\n"
+            f"About: {user_profile.about_me}\n"
+            f"Looking for: {user_profile.looking_for}\n"
+            f"Hobbies: {', '.join(hobby.name for hobby in user_profile.hobbies.all())}\n"
+            f"Here are potential matches:\n{match_strings}"
+            f"Based on age compatibility and shared interests, suggest the best match and explain why."
+        )
+
+        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are an expert relationship matchmaker."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            suggestion = response.choices[0].message.content
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+        return Response({"suggestion": suggestion})

@@ -15,9 +15,12 @@ class BaseProfileSerializer(serializers.ModelSerializer):
     about_me = serializers.CharField(required=True)
     looking_for = serializers.CharField(required=True)
     picture = serializers.CharField(max_length=100,required=False)
+    hobbies = serializers.StringRelatedField(many=True)
+    '''
     hobbies = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Hobby.objects.all(), required=False
     )
+    '''
 
     class Meta:
         model = Profile
@@ -123,4 +126,3 @@ class ProfileAvailabilitySerializer(serializers.ModelSerializer):
             data['place_name'] = 'Unknown'
 
         return data
-
