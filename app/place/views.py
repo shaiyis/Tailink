@@ -7,6 +7,7 @@ from . import serializers
 from place.models import Place
 from .utils import get_place_details
 
+
 class PlaceViewSet(ReadOnlyModelViewSet):
     """
     ViewSet for viewing places along with their information.

@@ -15,8 +15,13 @@ class BaseProfileSerializer(serializers.ModelSerializer):
     about_me = serializers.CharField(required=True)
     looking_for = serializers.CharField(required=True)
     picture = serializers.CharField(max_length=100,required=False)
-    hobbies = serializers.StringRelatedField(many=True)
+    hobbies = serializers.SlugRelatedField(
+        queryset=Hobby.objects.all(),  # Allow lookup of existing hobbies
+        many=True, 
+        slug_field="name"  # Use name instead of ID
+    )
     '''
+    hobbies = serializers.StringRelatedField(many=True)
     hobbies = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Hobby.objects.all(), required=False
     )
