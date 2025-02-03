@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from django.urls import reverse
 from unittest.mock import patch
-from profile.models import Profile, Hobby
+from profile.models import Profile, Hobby, ProfileAvailability
 
 User = get_user_model()
 
@@ -111,6 +111,64 @@ class UserLoginApiViewTest(UserRegisterApiViewTest):
         response = self.client.post(self.login_url, {'username': self.test_user['username'], 'password': 'wrongpass'})
         self.assertEqual(response.status_code, 400)
         self.assertNotIn('token', response.data)
+                  
+
+class ProfileViewSetTest(UserRegisterApiViewTest):
+    def setUp(self):
+        super().setUp()
+        self.profile_list_url = reverse('profile:profiles-list')
+
+        # Register users (since test methods are not executed inside setUp)
+        for user_data in self.user_data:
+            response = self.client.post(self.register_url, user_data, format='json')
+            self.assertEqual(response.status_code, 201)  # Ensure registration worked
+
+        # Ensure profiles are created for the registered users
+        for user_data in self.user_data:
+            user = User.objects.get(username=user_data["username"])
+            Profile.objects.get_or_create(user=user, defaults={"city": user_data["city"]})
+
+    def test_get_profiles(self):
+        """Test that all registered profiles are returned."""
+        response = self.client.get(self.profile_list_url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)  # Ensure all three profiles are returned
+
+        names = {profile["first_name"] for profile in response.data}
+        expected_names = {user["first_name"] for user in self.user_data}
+
+        self.assertSetEqual(names, expected_names)  # Ensure returned users match the registered ones
+
+
+class ProfileMatchesViewSetTest(UserRegisterApiViewTest):
+    def setUp(self):
+        super().setUp()
+        self.matches_url = reverse('profile:profile-matches-list')
+
+        # Register users
+        for user_data in self.user_data:
+            response = self.client.post(self.register_url, user_data, format='json')
+            self.assertEqual(response.status_code, 201)
+
+        # Authenticate as john_doe
+        login_response = self.client.post(reverse('profile:login'), {
+            'username': 'john_doe',
+            'password': 'securepassword'
+        }, format='json')
+        self.assertEqual(login_response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {login_response.data['token']}")
+    
+    def test_profile_matches(self):
+        """Test that jane_smith and michael_brown are matches for john_doe."""
+        response = self.client.get(self.matches_url)
+        self.assertEqual(response.status_code, 200)
+        
+        expected_matches = {"Jane"}
+        returned_matches = {profile["first_name"] for profile in response.data}
+        
+        self.assertSetEqual(expected_matches, returned_matches)
+
 
 '''
 login

@@ -6,9 +6,9 @@ app_name = 'profile'
 
 router = DefaultRouter()
 
-router.register('profiles', views.ProfileViewSet)
+router.register('profiles', views.ProfileViewSet, basename='profiles')
 router.register('matches', views.ProfileMatchesViewSet, basename='profile-matches')
-router.register('profile-availability', views.ProfileAvailabilityViewSet)
+router.register('profile-availability', views.ProfileAvailabilityViewSet, basename='profile-availability')
 router.register('nearby-profiles', views.NearbyProfilesViewSet, basename='nearby-profiles')
 
 
