@@ -19,6 +19,7 @@ class PlaceViewSet(ReadOnlyModelViewSet):
 
 
 class CreatePlaceView(APIView):
+    """Handle creating place details using Google Places API"""
     def post(self, request):
         place_name = request.data.get("name")
         

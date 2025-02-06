@@ -47,6 +47,7 @@ class UserLoginApiView(ObtainAuthToken):
 
 
 class UserRegisterApiView(APIView):
+    """Handle registering profiles"""
     serializer_class = serializers.RegisterSerializer
     
     def post(self, request):
@@ -106,6 +107,9 @@ class ProfileMatchesViewSet(ReadOnlyModelViewSet):
     
 
 class ProfileAvailabilityViewSet(ModelViewSet):
+    """
+    ViewSet for viewing and managing profile availability.
+    """
     queryset = ProfileAvailability.objects.all()
     serializer_class = serializers.ProfileAvailabilitySerializer
     filter_backends = [DjangoFilterBackend]
@@ -113,6 +117,9 @@ class ProfileAvailabilityViewSet(ModelViewSet):
 
 
 class NearbyProfilesViewSet(ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing profiles near the current profile.
+    """
     authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
     permission_classes = [IsAuthenticated]
 
@@ -155,6 +162,9 @@ class NearbyProfilesViewSet(ReadOnlyModelViewSet):
     
 
 class AIBaseSuggestionView(APIView):
+    """
+    View for AI-based suggestions for profile matches.
+    """
     authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
     permission_classes = [IsAuthenticated]
 
