@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
+import os
 from rest_framework import serializers
-from .models import Profile, Hobby, ProfileAvailability
 import requests
+from .models import Profile, Hobby, ProfileAvailability
 
 class BaseProfileSerializer(serializers.ModelSerializer):
     # Fields from User model
@@ -76,7 +77,7 @@ class RegisterSerializer(BaseProfileSerializer):
         return user
 
 
-PLACE_SERVICE_URL = "http://localhost:8000/api/place/"
+PLACE_SERVICE_URL = os.environ.get("PLACE_SERVICE_URL", "http://localhost:8000/api/place/")
 
 class ProfileAvailabilitySerializer(serializers.ModelSerializer):
     profile_username = serializers.CharField(write_only=True)  # Accept profile_username in input

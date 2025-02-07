@@ -153,3 +153,5 @@ REST_FRAMEWORK = {
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+PLACE_SERVICE_URL = os.environ.get("PLACE_SERVICE_URL", "http://localhost:8000/api/place/")
