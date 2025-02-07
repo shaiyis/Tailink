@@ -105,6 +105,11 @@ class ProfileAvailabilitySerializer(serializers.ModelSerializer):
 
         # Fetch place_id from Place Service API
         response = requests.get(f"{PLACE_SERVICE_URL}places?name={place_name}")
+
+        print(f"Using PLACE_SERVICE_URL: {PLACE_SERVICE_URL}", flush=True) # Debugging
+        print(f"place_name: {place_name}", flush=True) # Debugging
+        print(f"response: {response}", flush=True) # Debugging
+
         if response.status_code == 200 and response.json():
             place_id = response.json()[0]['id']  # Extract place_id from API response
         else:
