@@ -236,7 +236,7 @@ set_profile_availability
     "profile_username": "john_doe",
     "start_time": "2024-12-19T20:00:00Z",
     "end_time": "2024-12-19T21:00:00Z",
-    "place_name": "garden"
+    "place_name": "Ayin Hillel St 10"
 }
 
 Filter by profile and place with Filters in the admin panel.
