@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from profile.models import Profile, Hobby
+from owner.models import Owner, Dog
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
 from unittest.mock import patch
@@ -11,15 +11,10 @@ class BaseTestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = APIClient()
-        cls.register_url = reverse('profile:register')
-        cls.login_url = reverse('profile:login')
-        cls.profile_list_url = reverse('profile:profiles-list')
-        cls.matches_url = reverse('profile:profile-matches-list')
-
-        # Insert predefined hobbies
-        hobbies = ["gaming", "soccer", "coding", "cooking", "playing", "traveling"]
-        for hobby in hobbies:
-            Hobby.objects.get_or_create(name=hobby)
+        cls.register_url = reverse('owner:register')
+        cls.login_url = reverse('owner:login')
+        cls.owner_list_url = reverse('owner:owners-list')
+        cls.matches_url = reverse('owner:owner-matches-list')
 
         cls.user_data = [
             {
@@ -32,8 +27,6 @@ class BaseTestCase(APITestCase):
                 "age": 25,
                 "city": "New York",
                 "about_me": "I love coding and gaming.",
-                "looking_for": "A like-minded individual.",
-                "hobbies": ["gaming", "soccer"],
                 "picture": "My picture's url"
             },
             {
@@ -46,8 +39,6 @@ class BaseTestCase(APITestCase):
                 "age": 30,
                 "city": "San Francisco",
                 "about_me": "I'm a tech enthusiast who enjoys hiking.",
-                "looking_for": "Someone adventurous and curious.",
-                "hobbies": ["gaming", "soccer"],
                 "picture": "Jane's picture's url"
             },
             {
@@ -60,8 +51,6 @@ class BaseTestCase(APITestCase):
                 "age": 28,
                 "city": "Seattle",
                 "about_me": "A bookworm who loves exploring coffee shops.",
-                "looking_for": "Someone who loves good books and deep conversations.",
-                "hobbies": ["gaming", "soccer"],
                 "picture": "Michael's picture's url"
             }
         ]
@@ -75,10 +64,10 @@ class BaseTestCase(APITestCase):
 class UserRegisterApiViewTest(BaseTestCase):
     def test_registered_users_exist(self):
         """Test that the registered users exist in the database."""
-        self.assertEqual(Profile.objects.count(), 3)
+        self.assertEqual(Owner.objects.count(), 3)
         for user_data in self.user_data:
             user = User.objects.get(username=user_data["username"])
-            self.assertTrue(Profile.objects.filter(user=user).exists())
+            self.assertTrue(Owner.objects.filter(user=user).exists())
 
     def test_invalid_registration(self):
         """Test registration fails with missing fields."""
@@ -105,9 +94,9 @@ class UserLoginApiViewTest(BaseTestCase):
         self.assertEqual(Token.objects.get(key=token).user, user)
 
         # Check if location was updated
-        profile = Profile.objects.get(user=user)
-        self.assertAlmostEqual(float(profile.latitude), 40.7128, places=6)
-        self.assertAlmostEqual(float(profile.longitude), -74.0060, places=6)
+        owner = Owner.objects.get(user=user)
+        self.assertAlmostEqual(float(owner.latitude), 40.7128, places=6)
+        self.assertAlmostEqual(float(owner.longitude), -74.0060, places=6)
 
     def test_invalid_credentials(self):
         """Test login fails with invalid credentials."""
@@ -125,30 +114,10 @@ class ProfileViewSetTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)  # Ensure all three profiles are returned
 
-        names = {profile["first_name"] for profile in response.data}
+        names = {owner["first_name"] for owner in response.data}
         expected_names = {user["first_name"] for user in self.user_data}
 
         self.assertSetEqual(names, expected_names)  # Ensure returned users match the registered ones
-
-
-class ProfileMatchesViewSetTest(BaseTestCase):
-    def test_profile_matches(self):
-        """Test that jane_smith is a match for john_doe."""
-        # Authenticate as john_doe
-        login_response = self.client.post(reverse('profile:login'), {
-            'username': 'john_doe',
-            'password': 'securepassword'
-        }, format='json')
-        self.assertEqual(login_response.status_code, 200)
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {login_response.data['token']}")
-
-        response = self.client.get(self.matches_url)
-        self.assertEqual(response.status_code, 200)
-        
-        expected_matches = {"Jane"}
-        returned_matches = {profile["first_name"] for profile in response.data}
-        
-        self.assertSetEqual(expected_matches, returned_matches)
 
 
 '''

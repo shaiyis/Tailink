@@ -2,9 +2,9 @@ from django.contrib.auth.models import User
 import os
 from rest_framework import serializers
 import requests
-from .models import Profile, Hobby, ProfileAvailability
+from .models import Owner, Dog, OwnerAvailability
 
-class BaseProfileSerializer(serializers.ModelSerializer):
+class BaseOwnerSerializer(serializers.ModelSerializer):
     # Fields from User model
     first_name = serializers.CharField(source='user.first_name', max_length=30, required=True)
     last_name = serializers.CharField(source='user.last_name', max_length=30, required=True)
@@ -14,45 +14,32 @@ class BaseProfileSerializer(serializers.ModelSerializer):
     age = serializers.IntegerField(required=True)
     city = serializers.CharField(max_length=100, required=True)
     about_me = serializers.CharField(required=True)
-    looking_for = serializers.CharField(required=True)
     picture = serializers.CharField(max_length=100,required=False)
-    hobbies = serializers.SlugRelatedField(
-        queryset=Hobby.objects.all(),  # Allow lookup of existing hobbies
-        many=True, 
-        slug_field="name"  # Use name instead of ID
-    )
-    '''
-    hobbies = serializers.StringRelatedField(many=True)
-    hobbies = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Hobby.objects.all(), required=False
-    )
-    '''
 
     class Meta:
-        model = Profile
+        model = Owner
         fields = [
             'first_name', 'last_name',
-            'gender', 'age', 'city', 'about_me', 'looking_for', 'picture', 'hobbies'
+            'gender', 'age', 'city', 'about_me', 'picture'
         ]
 
 
-class RegisterSerializer(BaseProfileSerializer):
+class RegisterSerializer(BaseOwnerSerializer):
     # Fields from User model
     username = serializers.CharField(source='user.username', max_length=30, required=True)
     password = serializers.CharField(source='user.password', write_only=True, required=True, style={'input_type': 'password'})
     email = serializers.CharField(source='user.email', max_length=30, required=True)
 
-    class Meta(BaseProfileSerializer.Meta):
-        fields = ['username', 'password', 'email'] + BaseProfileSerializer.Meta.fields
+    class Meta(BaseOwnerSerializer.Meta):
+        fields = ['username', 'password', 'email'] + BaseOwnerSerializer.Meta.fields
 
     def create(self, validated_data):
         # Extract Profile-specific fields
-        profile_data = {
+        owner_data = {
             'gender': validated_data.pop('gender'),
             'age': validated_data.pop('age'),
             'city': validated_data.pop('city'),
             'about_me': validated_data.pop('about_me'),
-            'looking_for': validated_data.pop('looking_for'),
             'picture': validated_data.pop('picture', None)
         }
 
@@ -66,12 +53,7 @@ class RegisterSerializer(BaseProfileSerializer):
         )
 
         # Create Profile instance
-        profile = Profile.objects.create(user=user, **profile_data)
-
-        hobbies = validated_data.pop('hobbies', [])
-        if hobbies:
-            profile.hobbies.set(hobbies)  # Many-to-Many relationship
-        
+        profile = Owner.objects.create(user=user, **owner_data)        
         profile.save()
 
         return user
@@ -79,29 +61,29 @@ class RegisterSerializer(BaseProfileSerializer):
 
 PLACE_SERVICE_URL = os.environ.get("PLACE_SERVICE_URL", "http://localhost:8000/api/place/")
 
-class ProfileAvailabilitySerializer(serializers.ModelSerializer):
-    profile_username = serializers.CharField(write_only=True)  # Accept profile_username in input
+class OwnerAvailabilitySerializer(serializers.ModelSerializer):
+    owner_username = serializers.CharField(write_only=True)  # Accept profile_username in input
     place_name = serializers.CharField(write_only=True)  # Accept place_name in input
     place_id = serializers.UUIDField(read_only=True)  # Store UUID but hide it from input
     start_time = serializers.DateTimeField(required=True)
     end_time = serializers.DateTimeField(required=True)
 
     class Meta:
-        model = ProfileAvailability
+        model = OwnerAvailability
         #fields = '__all__'  # Include all fields in the model
-        fields = ['profile_username', 'place_name', 'place_id', 'start_time', 'end_time']
+        fields = ['owner_username', 'place_name', 'place_id', 'start_time', 'end_time']
 
     def create(self, validated_data):
-        """Manually retrieve Profile and Place ID before saving"""
+        """Manually retrieve Owner and Place ID before saving"""
 
         # Extract profile_username & place_name from validated_data
-        profile_username = validated_data.pop('profile_username')
+        owner_username = validated_data.pop('profile_username')
         place_name = validated_data.pop('place_name')
 
         # Get Profile object
-        profile = Profile.objects.filter(user__username=profile_username).first()
-        if not profile:
-            raise serializers.ValidationError({'profile_username': 'Profile not found'})
+        owner = Owner.objects.filter(user__username=owner_username).first()
+        if not owner:
+            raise serializers.ValidationError({'owner_username': 'Owner not found'})
 
         # Fetch place_id from Place Service API
         response = requests.get(f"{PLACE_SERVICE_URL}places?name={place_name}")
@@ -116,8 +98,8 @@ class ProfileAvailabilitySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'place_name': 'Place not found in Place Service'})
 
         # Now create ProfileAvailability (without profile_username & place_name)
-        return ProfileAvailability.objects.create(
-            profile=profile,
+        return OwnerAvailability.objects.create(
+            profile=owner,
             place_id=place_id,  # Store UUID
             **validated_data  # Includes start_time & end_time
         )
@@ -127,7 +109,7 @@ class ProfileAvailabilitySerializer(serializers.ModelSerializer):
         """Fetch place_name from Place Service using place_id"""
         data = super().to_representation(instance)
 
-        data['profile_username'] = instance.profile.user.username
+        data['owner_username'] = instance.owner.user.username
 
         # Call the Place Service API to get place_name
         response = requests.get(f"{PLACE_SERVICE_URL}places/{instance.place_id}/")
