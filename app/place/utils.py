@@ -1,4 +1,4 @@
-import googlemaps
+import googlemaps # type: ignore
 from django.conf import settings
 
 def get_place_details(place_name):

@@ -53,8 +53,8 @@ class RegisterSerializer(BaseOwnerSerializer):
         )
 
         # Create Profile instance
-        profile = Owner.objects.create(user=user, **owner_data)        
-        profile.save()
+        owner = Owner.objects.create(user=user, **owner_data)        
+        owner.save()
 
         return user
 
@@ -62,7 +62,8 @@ class RegisterSerializer(BaseOwnerSerializer):
 PLACE_SERVICE_URL = os.environ.get("PLACE_SERVICE_URL", "http://localhost:8000/api/place/")
 
 class OwnerAvailabilitySerializer(serializers.ModelSerializer):
-    owner_username = serializers.CharField(write_only=True)  # Accept profile_username in input
+    owner_username = serializers.CharField(write_only=True)  # Accept owner_username in input
+    dog = serializers.CharField(write_only=True)
     place_name = serializers.CharField(write_only=True)  # Accept place_name in input
     place_id = serializers.UUIDField(read_only=True)  # Store UUID but hide it from input
     start_time = serializers.DateTimeField(required=True)
@@ -70,20 +71,26 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OwnerAvailability
-        #fields = '__all__'  # Include all fields in the model
-        fields = ['owner_username', 'place_name', 'place_id', 'start_time', 'end_time']
+        # fields = '__all__'  # Include all fields in the model
+        fields = ['owner_username', 'dog', 'place_name', 'place_id', 'start_time', 'end_time']
 
     def create(self, validated_data):
         """Manually retrieve Owner and Place ID before saving"""
 
-        # Extract profile_username & place_name from validated_data
-        owner_username = validated_data.pop('profile_username')
+        # Extract owner_username & place_name from validated_data
+        owner_username = validated_data.pop('owner_username')
+        dog = validated_data.pop('dog')
         place_name = validated_data.pop('place_name')
 
-        # Get Profile object
+        # Get Owner object
         owner = Owner.objects.filter(user__username=owner_username).first()
         if not owner:
             raise serializers.ValidationError({'owner_username': 'Owner not found'})
+        
+        # Get Dog object
+        dog_instance = Dog.objects.filter(owner=owner, name=dog).first()
+        if not dog_instance:
+            raise serializers.ValidationError({'dog': 'Dog not found for this owner'})
 
         # Fetch place_id from Place Service API
         response = requests.get(f"{PLACE_SERVICE_URL}places?name={place_name}")
@@ -99,7 +106,8 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
 
         # Now create ProfileAvailability (without profile_username & place_name)
         return OwnerAvailability.objects.create(
-            profile=owner,
+            owner=owner,
+            dog=dog_instance,
             place_id=place_id,  # Store UUID
             **validated_data  # Includes start_time & end_time
         )
@@ -110,6 +118,7 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
 
         data['owner_username'] = instance.owner.user.username
+        data['dog'] = instance.dog.name
 
         # Call the Place Service API to get place_name
         response = requests.get(f"{PLACE_SERVICE_URL}places/{instance.place_id}/")

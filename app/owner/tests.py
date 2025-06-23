@@ -129,8 +129,6 @@ outout - token
 register
 http://localhost:8000/api/register/
 
-Add hobbies: gaming, soccer, coding, cooking, playing, traveling
-
 {
     "username": "john_doe",
     "password": "securepassword",
@@ -140,11 +138,10 @@ Add hobbies: gaming, soccer, coding, cooking, playing, traveling
     "gender": "male",
     "age": 25,
     "city": "New York",
-    "about_me": "I love coding and gaming.",
-    "looking_for": "A like-minded individual.",
-    "hobbies": ["gaming", "soccer"],
+    "about_me": "Golden retriever lover!",
     "picture": "My picture's url"
 }
+fa8351cb25d26a897b0910e530651089b7382f66
 {
     "username": "jane_smith",
     "password": "anothersecurepassword",
@@ -154,11 +151,10 @@ Add hobbies: gaming, soccer, coding, cooking, playing, traveling
     "gender": "female",
     "age": 30,
     "city": "San Francisco",
-    "about_me": "I'm a tech enthusiast who enjoys hiking.",
-    "looking_for": "Someone adventurous and curious.",
-    "hobbies": ["gaming", "soccer"],
+    "about_me": "Huskey lover!",
     "picture": "Jane's picture's url"
 }
+b2a748b79f085b4bff1e476f3535dd159d6a18f1
 {
     "username": "michael_brown",
     "password": "yetanothersecurepassword",
@@ -169,12 +165,8 @@ Add hobbies: gaming, soccer, coding, cooking, playing, traveling
     "age": 28,
     "city": "Seattle",
     "about_me": "A bookworm who loves exploring coffee shops.",
-    "looking_for": "Someone who loves good books and deep conversations.",
-    "hobbies": ["gaming", "soccer"],
     "picture": "Michael's picture's url"
 }
-
-token 70173159dfb608b66e42d8cd28cbb8c8a22bea21
 
 output - User registered successfully!
 
@@ -184,32 +176,22 @@ http://localhost:8000/api/profile/profiles
 get_profile/id
 http://localhost:8000/api/profile/profiles/{profile_id}
 
-get_matches
-http://localhost:8000/api/profile/matches
 Add using the ModHeader chrome extension: Authorization: Token <your-token-here>
 get the token via login page.
- 
- Tests Done:
- Getting matches when:
-   1. age and hobbies matches
-   2. more than one hobby in common
-   3. more than one profiles matches
-
- Getting no matches when:
-   1. only age matches
-   2. only hobbies matches
-   3. nothing matches
 
 set_profile_availability
 {
-    "profile_username": "john_doe",
-    "start_time": "2024-12-19T20:00:00Z",
-    "end_time": "2024-12-19T21:00:00Z",
-    "place_name": "Ayin Hillel St 10"
+    "owner_username": "john_doe",
+    "dog": "Pashosho",
+    "place_name": "Dog garden",
+    "start_time": "2025-06-23T20:00:00Z",
+    "end_time": "2025-06-23T21:00:00Z"
 }
 
-Filter by profile and place with Filters in the admin panel.
+Filter by profile and place with Filters in the admin panel (this is changing the url automatically).
 
 NearbyProfilesViewSet
-http://localhost:8000/api/profile/nearby-profiles/?radius=15
+http://localhost:8000/api/owner/nearby-owners/?radius=15
+
+add dog, attach to owner
 '''

@@ -3,7 +3,7 @@ from django.db.models import F
 from django.db.models.functions import Abs
 from django_filters.rest_framework import DjangoFilterBackend
 from math import radians, cos, sin, asin, sqrt
-import openai
+import openai # type: ignore
 from owner.models import Owner, OwnerAvailability
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -74,12 +74,12 @@ class OwnerViewSet(ReadOnlyModelViewSet):
 
 class OwnerAvailabilityViewSet(ModelViewSet):
     """
-    ViewSet for viewing and managing profile availability.
+    ViewSet for viewing and managing owner availability.
     """
     queryset = OwnerAvailability.objects.all()
     serializer_class = serializers.OwnerAvailabilitySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['profile', 'place_id', 'start_time', 'end_time']
+    filterset_fields = ['owner', 'place_id', 'dog', 'start_time', 'end_time']
 
 
 class NearbyOwnersViewSet(ReadOnlyModelViewSet):

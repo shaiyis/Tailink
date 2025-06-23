@@ -12,10 +12,6 @@ class Owner(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
-    # For tracking which dog is currently outside
-    current_active_dog = models.ForeignKey(
-        'Dog', null=True, blank=True, on_delete=models.SET_NULL, related_name='active_owner'
-    )
     def __str__(self):
         return self.user.username
 
@@ -33,14 +29,16 @@ class Dog(models.Model):
 
 
 class OwnerAvailability(models.Model):
-    owner = models.OneToOneField(Owner, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    dog = models.ForeignKey(Dog, on_delete=models.CASCADE)
     place_id = models.BigIntegerField()
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
     def __str__(self):
         return (
-            f"{self.owner} is available at place_id {self.place_id} "
-            f"from {self.start_time.strftime('%Y-%m-%d %H:%M')} "
-            f"to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
+            f"{self.owner} is available at place_id {self.place_id}"
+            f" with {self.dog}"
+            f" from {self.start_time.strftime('%Y-%m-%d %H:%M')}"
+            f" to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
         )
