@@ -5,6 +5,10 @@ server {
         alias /vol/static;
     }
 
+    location /media {
+        alias /vol/web/media;
+    }
+
     location / {
         uwsgi_pass              ${APP_HOST}:${APP_PORT};
         include                 /etc/nginx/uwsgi_params;

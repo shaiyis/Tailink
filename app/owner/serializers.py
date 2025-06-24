@@ -14,7 +14,6 @@ class BaseOwnerSerializer(serializers.ModelSerializer):
     age = serializers.IntegerField(required=True)
     city = serializers.CharField(max_length=100, required=True)
     about_me = serializers.CharField(required=True)
-    picture = serializers.CharField(max_length=100,required=False)
 
     class Meta:
         model = Owner
@@ -39,8 +38,7 @@ class RegisterSerializer(BaseOwnerSerializer):
             'gender': validated_data.pop('gender'),
             'age': validated_data.pop('age'),
             'city': validated_data.pop('city'),
-            'about_me': validated_data.pop('about_me'),
-            'picture': validated_data.pop('picture', None)
+            'about_me': validated_data.pop('about_me')
         }
 
         # Create User instance

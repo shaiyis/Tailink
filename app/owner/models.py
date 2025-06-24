@@ -8,7 +8,7 @@ class Owner(models.Model):
     age = models.PositiveIntegerField()
     city = models.CharField(max_length=100)
     about_me = models.TextField()
-    picture = models.CharField(max_length=100)
+    picture = models.ImageField(upload_to='owner_pictures/', blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
@@ -22,7 +22,7 @@ class Dog(models.Model):
     breed = models.CharField(max_length=100)  # free-text, e.g., “Golden Retriever”
     age = models.PositiveIntegerField()
     about = models.TextField(blank=True)
-    picture = models.CharField(max_length=100)
+    picture = models.ImageField(upload_to='dog_pictures/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.breed})"
