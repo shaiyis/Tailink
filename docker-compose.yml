@@ -34,6 +34,22 @@ services:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
+  
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_API_URL=http://localhost:8000/api/
+    depends_on:
+      - app
+
 volumes:
   dev-db-data:
   dev-static-data:
