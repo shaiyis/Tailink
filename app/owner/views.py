@@ -3,7 +3,7 @@ from django.db.models import F
 from django.db.models.functions import Abs
 from django_filters.rest_framework import DjangoFilterBackend
 from math import radians, cos, sin, asin, sqrt
-import openai # type: ignore
+# import openai # type: ignore
 from owner.models import Owner, OwnerAvailability
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
