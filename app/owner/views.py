@@ -53,6 +53,9 @@ class UserRegisterApiView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
+        print("FILES:", request.FILES)
+        print("DATA:", request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(

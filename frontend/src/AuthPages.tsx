@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 export function LoginPage() {
@@ -85,15 +86,19 @@ export function LoginPage() {
   );
 }
 
+
 export function RegisterPage() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: send POST request to Django API /api/register/
-    console.log('Registering with:', { username, email, password });
+    navigate("/register/details", {
+      state: { username, email, password },
+    });  
   };
 
   return (

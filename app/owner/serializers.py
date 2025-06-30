@@ -38,7 +38,8 @@ class RegisterSerializer(BaseOwnerSerializer):
             'gender': validated_data.pop('gender'),
             'age': validated_data.pop('age'),
             'city': validated_data.pop('city'),
-            'about_me': validated_data.pop('about_me')
+            'about_me': validated_data.pop('about_me'),
+            'picture': validated_data.get('picture', None)  # Optional field
         }
 
         # Create User instance
