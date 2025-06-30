@@ -4,7 +4,7 @@ from django.db.models.functions import Abs
 from django_filters.rest_framework import DjangoFilterBackend
 from math import radians, cos, sin, asin, sqrt
 # import openai # type: ignore
-from owner.models import Owner, OwnerAvailability
+from owner.models import Owner, OwnerAvailability, Dog
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -52,9 +52,6 @@ class UserRegisterApiView(APIView):
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-
-        print("FILES:", request.FILES)
-        print("DATA:", request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -188,3 +185,13 @@ class AIBaseSuggestionView(APIView):
             return Response({"error": str(e)}, status=500)
 
         return Response({"suggestion": suggestion})
+
+class DogViewSet(ModelViewSet):
+    """
+    ViewSet for viewing and managing Dog.
+    """
+    authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
+    permission_classes = [IsAuthenticated]
+
+    queryset = Dog.objects.all()
+    serializer_class = serializers.DogSerializer

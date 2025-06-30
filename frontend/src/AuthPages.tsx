@@ -6,6 +6,8 @@ export function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -36,7 +38,7 @@ export function LoginPage() {
         localStorage.setItem('token', data.token);
     
         // Redirect to another page if needed
-        // navigate('/dashboard');
+        navigate('/dogs'); // change to dashboard
       } catch (error) {
         console.error('Error logging in:', error);
         alert('Something went wrong. Please try again.');

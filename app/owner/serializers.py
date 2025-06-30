@@ -127,3 +127,39 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
             data['place_name'] = 'Unknown'
 
         return data
+
+
+class DogSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(write_only=True) 
+    breed = serializers.CharField(write_only=True)  # Accept place_name in input
+    age = serializers.IntegerField(required=True)
+    about = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Dog
+        # fields = '__all__'  # Include all fields in the model
+        fields = ['name', 'breed', 'age', 'about', 'picture']
+
+    def create(self, validated_data):
+        # Extract owner_username & place_name from validated_data
+        # owner_username = validated_data.pop('owner_username')
+
+        user = self.context['request'].user
+
+        '''
+        # Get Owner object
+        owner = Owner.objects.filter(user__username=owner_username).first()
+        if not owner:
+            raise serializers.ValidationError({'owner_username': 'Owner not found'})
+        '''
+        # Get the Owner object linked to the user
+        try:
+            owner = user.owner
+        except Owner.DoesNotExist:
+            raise serializers.ValidationError("Owner profile not found for this user.")
+
+        # Now create Dog instance
+        return Dog.objects.create(
+            owner=owner,
+            **validated_data
+        )
