@@ -46,6 +46,14 @@ class UserLoginApiView(ObtainAuthToken):
             owner.save()
 
 
+class UserMeView(APIView):
+    authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"username": request.user.username})
+
+
 class UserRegisterApiView(APIView):
     """Handle registering profiles"""
     serializer_class = serializers.RegisterSerializer
@@ -193,5 +201,9 @@ class DogViewSet(ModelViewSet):
     authentication_classes = (TokenAuthentication,)  # Use Token-based authentication
     permission_classes = [IsAuthenticated]
 
-    queryset = Dog.objects.all()
     serializer_class = serializers.DogSerializer
+
+    def get_queryset(self):
+        owner = Owner.objects.filter(user=self.request.user).first()
+        return Dog.objects.filter(owner=owner)
+        

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { LoginPage, RegisterPage } from './AuthPages';
 import { RegisterDetailsPage } from './RegisterDetailsPage';
 import { AddDogPage } from './AddDogPage';
+import { SetAvailabilityPage } from './SetAvailabilityPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register/details" element={<RegisterDetailsPage />} />
         <Route path="/dogs" element={<AddDogPage />} />
+        <Route path="/set-availability" element={<SetAvailabilityPage />} />
       </Routes>
     </Router>
   );

@@ -130,7 +130,7 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
 
 
 class DogSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(write_only=True) 
+    # name = serializers.CharField(write_only=True) # Comment so it will be included in the output
     breed = serializers.CharField(write_only=True)  # Accept place_name in input
     age = serializers.IntegerField(required=True)
     about = serializers.CharField(write_only=True)

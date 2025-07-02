@@ -23,7 +23,12 @@ export function AddDogPage() {
     const token = localStorage.getItem("token"); // or however you store it
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}owner/dogs/`, {
+      for (const pair of formData.entries()) {
+          console.log(`${pair[0]}:`, pair[1]);
+      }
+      console.log(token)     
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL}owner/dogs/my/`, {
         method: 'POST',
         headers: {
           Authorization: `Token ${token}`,
@@ -34,7 +39,7 @@ export function AddDogPage() {
       if (!response.ok) throw new Error("Failed to add dog");
 
       alert("Dog added successfully!");
-      navigate('/dogs'); // or wherever you want to go
+      navigate('/set-availability'); // or wherever you want to go
     } catch (error) {
       console.error(error);
       alert("Error adding dog");
