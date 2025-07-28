@@ -23,10 +23,10 @@ export function AddDogPage() {
     const token = localStorage.getItem("token"); // or however you store it
 
     try {
-      for (const pair of formData.entries()) {
+      /*for (const pair of formData.entries()) {
           console.log(`${pair[0]}:`, pair[1]);
       }
-      console.log(token)     
+      console.log(token)*/
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}owner/dogs/my/`, {
         method: 'POST',

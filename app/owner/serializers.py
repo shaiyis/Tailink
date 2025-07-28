@@ -99,9 +99,22 @@ class OwnerAvailabilitySerializer(serializers.ModelSerializer):
         print(f"response: {response}", flush=True) # Debugging
 
         if response.status_code == 200 and response.json():
+            print("place found in Place Service")
             place_id = response.json()[0]['id']  # Extract place_id from API response
         else:
-            raise serializers.ValidationError({'place_name': 'Place not found in Place Service'})
+            # create place with place_name
+            print("place not found in Place Service, creating new place")
+            create_response = requests.post(
+                f"{PLACE_SERVICE_URL}create/",
+                json={"name": place_name}
+            )
+            if create_response.status_code in (200, 201):
+                place_id = create_response.json().get('id')
+                print(f"Created place with ID: {place_id}")
+                if not place_id:
+                    raise serializers.ValidationError({'place_name': 'Place creation failed: No ID returned'})
+            else:
+                raise serializers.ValidationError({'place_name': 'Place could not be created in Place Service'})
 
         # Now create ProfileAvailability (without profile_username & place_name)
         return OwnerAvailability.objects.create(

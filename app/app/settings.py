@@ -156,7 +156,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
-GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
+TOMTOM_MAPS_API_KEY = os.environ.get('TOMTOM_MAPS_API_KEY')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 

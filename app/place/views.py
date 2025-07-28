@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from . import serializers
 from place.models import Place
-from .utils import get_place_details
+from .utils import get_place_details_tomtom
 
 
 class PlaceViewSet(ReadOnlyModelViewSet):
@@ -19,20 +19,20 @@ class PlaceViewSet(ReadOnlyModelViewSet):
 
 
 class CreatePlaceView(APIView):
-    """Handle creating place details using Google Maps API"""
+    """Handle creating place details using TOMTOM Maps API"""
     def post(self, request):
         place_name = request.data.get("name")
         
-        place_data = get_place_details(place_name)
+        place_data = get_place_details_tomtom(place_name)
         if not place_data:
-            return Response({"error": "Place not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Place not found in tomtom"}, status=status.HTTP_404_NOT_FOUND)
         
         place, created = Place.objects.get_or_create(
             name=place_data["name"],
             defaults={
                 "address": place_data["address"],
                 "latitude": place_data["latitude"],
-                "longitude": place_data["longitude"]
+                "longitude": place_data["longitude"]    
             }
         )
 

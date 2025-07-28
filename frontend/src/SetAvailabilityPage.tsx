@@ -4,7 +4,7 @@ export function SetAvailabilityPage() {
   const [dogs, setDogs] = useState<{ name: string }[]>([]);
   const [ownerUsername, setOwnerUsername] = useState('');
   const [selectedDogName, setSelectedDogName] = useState('');
-  const [placeName, setPlaceName] = useState('');
+  const [place, setPlace] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
@@ -39,7 +39,7 @@ export function SetAvailabilityPage() {
     const payload = {
       owner_username: ownerUsername,
       dog: selectedDogName,
-      place_name: placeName,
+      place_name: place,
       start_time: new Date(startTime).toISOString(),
       end_time: new Date(endTime).toISOString(),
     };
@@ -86,12 +86,12 @@ export function SetAvailabilityPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Place Name</label>
+            <label className="block text-sm font-medium">Place</label>
             <input
               type="text"
               className="w-full border border-gray-300 p-2 rounded-xl"
-              value={placeName}
-              onChange={(e) => setPlaceName(e.target.value)}
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
               required
             />
           </div>
