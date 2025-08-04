@@ -9,7 +9,8 @@ router = DefaultRouter()
 router.register('owners', views.OwnerViewSet, basename='owners')
 router.register('owner-availability', views.OwnerAvailabilityViewSet, basename='owner-availability')
 router.register('nearby-owners', views.NearbyOwnersViewSet, basename='nearby-owners')
-router.register('dogs/my', views.DogViewSet, basename='dogs')
+router.register('dogs', views.DogViewSet, basename='dogs')
+router.register('dogs/my', views.MyDogsViewSet, basename='my-dogs')
 
 
 urlpatterns = [

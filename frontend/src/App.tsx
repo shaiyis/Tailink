@@ -3,6 +3,7 @@ import { LoginPage, RegisterPage } from './AuthPages';
 import { RegisterDetailsPage } from './RegisterDetailsPage';
 import { AddDogPage } from './AddDogPage';
 import { SetAvailabilityPage } from './SetAvailabilityPage';
+import { DogMap } from './MapPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/register/details" element={<RegisterDetailsPage />} />
         <Route path="/dogs" element={<AddDogPage />} />
         <Route path="/set-availability" element={<SetAvailabilityPage />} />
+        <Route path="/map" element={<DogMap />} />
       </Routes>
     </Router>
   );

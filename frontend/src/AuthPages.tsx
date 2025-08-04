@@ -38,8 +38,8 @@ export function LoginPage() {
         localStorage.setItem('token', data.token);
     
         // Redirect to another page if needed
-        //navigate('/dogs'); // change to dashboard
-        navigate('/set-availability');
+        // navigate('/dogs'); // change to dashboard
+        navigate('/map');
       } catch (error) {
         console.error('Error logging in:', error);
         alert('Something went wrong. Please try again.');

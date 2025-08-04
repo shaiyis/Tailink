@@ -194,7 +194,18 @@ class AIBaseSuggestionView(APIView):
 
         return Response({"suggestion": suggestion})
 
+
 class DogViewSet(ModelViewSet):
+    """
+    ViewSet for viewing and managing Dog.
+    """
+    queryset = Dog.objects.all()
+    serializer_class = serializers.DogSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name']
+
+
+class MyDogsViewSet(ModelViewSet):
     """
     ViewSet for viewing and managing Dog.
     """
